@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { MoodEntry, AppState, DailyCheckIn as DailyCheckInType, Assessment } from '@/lib/types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Plus, TrendingUp, Calendar, Trash2, Settings, Menu, MessageCircle, ClipboardList, Brain, RefreshCw } from 'lucide-react';
+import { Plus, TrendingUp, Calendar, Trash2, Settings, Menu, MessageCircle, ClipboardList, Brain, RefreshCw, Info, Heart } from 'lucide-react';
 import { getMoodEmoji, getMoodColor, formatDate } from '@/lib/utils';
 import DailyCheckIn from './DailyCheckIn';
 
@@ -26,6 +26,7 @@ interface DashboardScreenProps {
   onTakeAssessment: () => void;
   onSettings: () => void;
   onDailyCheckIn: (checkIn: DailyCheckInType) => void;
+  onResources: () => void;
 }
 
 export default function DashboardScreen({
@@ -35,6 +36,7 @@ export default function DashboardScreen({
   onTakeAssessment,
   onSettings,
   onDailyCheckIn,
+  onResources,
 }: DashboardScreenProps) {
   const [showAddMood, setShowAddMood] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -211,19 +213,32 @@ export default function DashboardScreen({
                 <span className="text-sm">Assessment</span>
               </button>
 
-              <button
-                onClick={generateAnalysis}
-                disabled={appState.moodHistory.length < 3 || isLoadingAnalysis}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                title={appState.moodHistory.length < 3 ? 'Add at least 3 mood entries to get AI insights' : 'Generate AI analysis'}
-              >
-                {isLoadingAnalysis ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" strokeWidth={2.5} />
-                ) : (
-                  <Brain className="w-4 h-4" strokeWidth={2.5} />
+              <div className="relative group">
+                <button
+                  onClick={generateAnalysis}
+                  disabled={appState.moodHistory.length < 3 || isLoadingAnalysis}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  {isLoadingAnalysis ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" strokeWidth={2.5} />
+                  ) : (
+                    <Brain className="w-4 h-4" strokeWidth={2.5} />
+                  )}
+                  <span className="text-sm">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
+                  {appState.moodHistory.length < 3 && (
+                    <Info className="w-4 h-4" strokeWidth={2.5} />
+                  )}
+                </button>
+                {appState.moodHistory.length < 3 && (
+                  <div className="absolute top-full mt-2 right-0 w-64 bg-gray-900 text-white text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-xl">
+                    <div className="flex items-start gap-2">
+                      <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <p>Add at least 3 mood entries to unlock AI-powered insights and personalized recommendations.</p>
+                    </div>
+                    <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+                  </div>
                 )}
-                <span className="text-sm">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
-              </button>
+              </div>
 
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -305,6 +320,19 @@ export default function DashboardScreen({
                 </div>
               </button>
             )}
+
+            <button
+              onClick={onResources}
+              className="w-full p-4 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors text-left"
+            >
+              <div className="flex items-center space-x-3">
+                <Heart className="w-6 h-6 text-pink-600" />
+                <div>
+                  <div className="font-semibold text-gray-800">Support Resources</div>
+                  <div className="text-sm text-gray-600">Hotlines, helplines, and mental health resources</div>
+                </div>
+              </div>
+            </button>
 
             <button
               onClick={onSettings}

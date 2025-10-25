@@ -52,11 +52,11 @@ const resources: Resource[] = [
   },
   {
     id: 'website-3',
-    title: 'MindShift CBT App',
-    description: 'Free app for anxiety and stress management',
-    type: 'app',
-    url: 'https://www.anxietycanada.com/resources/mindshift-cbt/',
-    category: 'self-help',
+    title: 'SAMHSA National Helpline',
+    description: 'Free, confidential mental health and substance abuse referrals - Call 1-800-662-4357',
+    type: 'hotline',
+    phone: '1-800-662-4357',
+    category: 'general',
   },
 ];
 
@@ -163,6 +163,18 @@ export default function ResultsScreen({ responses, onContinue }: ResultsScreenPr
           )}
         </div>
 
+        {/* Continue to Dashboard Button */}
+        <div className="bg-white rounded-3xl shadow-2xl p-6">
+          <button
+            onClick={onContinue}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center space-x-2 shadow-lg"
+          >
+            <CheckCircle className="w-5 h-5" />
+            <span>Continue to Dashboard</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
         {/* Healthy Habits */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
           <div className="flex items-center space-x-3">
@@ -265,17 +277,6 @@ export default function ResultsScreen({ responses, onContinue }: ResultsScreenPr
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Continue Button */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6">
-          <button
-            onClick={onContinue}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center space-x-2 shadow-lg"
-          >
-            <span>Go to Dashboard</span>
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </div>

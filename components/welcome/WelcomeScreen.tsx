@@ -70,8 +70,8 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <div className="flex items-start space-x-3 p-4 bg-purple-50 rounded-xl">
               <Shield className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-gray-800">100% Private</h3>
-                <p className="text-sm text-gray-600">All your data stays on your device</p>
+                <h3 className="font-semibold text-gray-800">Anonymous & Private</h3>
+                <p className="text-sm text-gray-600">Your data is stored securely with no personal identifiers</p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-4 bg-pink-50 rounded-xl">
@@ -85,7 +85,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
               <Lock className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-gray-800">Secure</h3>
-                <p className="text-sm text-gray-600">Optional PIN protection</p>
+                <p className="text-sm text-gray-600">Protected with your personal PIN</p>
               </div>
             </div>
           </div>
@@ -135,22 +135,25 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <div className="space-y-3 text-sm text-gray-700">
               <p className="font-semibold text-gray-800">How Moodify Works:</p>
               <ul className="space-y-2 list-disc list-inside">
-                <li>All your data is stored locally on your device</li>
-                <li>We never send your personal information to any server</li>
-                <li>You can delete all your data at any time</li>
-                <li>Data older than 3 months is automatically removed</li>
+                <li>Your data is stored locally on your device for quick access</li>
+                <li>Anonymous data is securely stored in our database for research</li>
+                <li>No personal identifiers (name, email, etc.) are ever collected</li>
+                <li>Your device data can be deleted anytime from Settings</li>
+                <li>Local data older than 3 months is automatically removed</li>
               </ul>
 
-              <p className="font-semibold text-gray-800 pt-4">Anonymous Data Sharing:</p>
+              <p className="font-semibold text-gray-800 pt-4">What We Store for Research:</p>
               <p>
-                With your permission, we may collect anonymous usage statistics (no personal info)
-                to improve Moodify for everyone. This includes:
+                To help improve mental health resources for teens, we store anonymous data including:
               </p>
               <ul className="space-y-2 list-disc list-inside">
-                <li>How often the app is used</li>
-                <li>Which features are most helpful</li>
-                <li>General mood trends (aggregated, not individual)</li>
+                <li>Demographics (age, sex, city, school) - for research context</li>
+                <li>Mood entries and assessment responses - to identify patterns</li>
+                <li>Timestamps - to analyze trends over time</li>
               </ul>
+              <p className="text-xs text-gray-600 italic pt-2">
+                All stored data is anonymous and cannot be traced back to you. Database entries are kept permanently for research purposes.
+              </p>
 
               <p className="font-semibold text-gray-800 pt-4">Important:</p>
               <p>
@@ -169,7 +172,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                 className="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 mt-1"
               />
               <span className="text-sm text-gray-700">
-                I understand and agree to the privacy policy and consent to anonymous data collection
+                I understand and consent to anonymous data storage for mental health research. I confirm no personal identifiers will be collected.
               </span>
             </label>
 
@@ -201,13 +204,13 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-gray-800">Secure Your Data</h2>
-          <p className="text-gray-600">Create a PIN to protect your Moodify data</p>
+          <p className="text-gray-600">Create a PIN to protect your personal information</p>
         </div>
 
         <div className="space-y-4">
           <div className="bg-purple-50 p-4 rounded-xl">
             <p className="text-sm text-gray-700 text-center">
-              Your PIN will be required every time you open Moodify to keep your data private and secure.
+              <span className="font-semibold">PIN is required.</span> Your PIN protects your local device data and will be required every time you open Moodify.
             </p>
           </div>
 

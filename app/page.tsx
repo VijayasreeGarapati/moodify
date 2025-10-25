@@ -13,6 +13,7 @@ import QuestionnaireScreen from '@/components/questionnaire/QuestionnaireScreen'
 import ResultsScreen from '@/components/results/ResultsScreen';
 import DashboardScreen from '@/components/dashboard/DashboardScreen';
 import SettingsScreen from '@/components/feedback/SettingsScreen';
+import ResourcesScreen from '@/components/resources/ResourcesScreen';
 
 type AppScreen =
   | 'pin-verification'
@@ -22,7 +23,8 @@ type AppScreen =
   | 'questionnaire'
   | 'results'
   | 'dashboard'
-  | 'settings';
+  | 'settings'
+  | 'resources';
 
 export default function Home() {
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('moodify-user-profile', null);
@@ -218,6 +220,14 @@ export default function Home() {
     setCurrentScreen('dashboard');
   };
 
+  const handleOpenResources = () => {
+    setCurrentScreen('resources');
+  };
+
+  const handleCloseResources = () => {
+    setCurrentScreen('dashboard');
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
@@ -267,6 +277,7 @@ export default function Home() {
           onTakeAssessment={handleTakeAssessment}
           onSettings={handleOpenSettings}
           onDailyCheckIn={handleDailyCheckIn}
+          onResources={handleOpenResources}
         />
       )}
 
@@ -276,6 +287,10 @@ export default function Home() {
           onClose={handleCloseSettings}
           onDeleteAllData={handleDeleteAllData}
         />
+      )}
+
+      {currentScreen === 'resources' && (
+        <ResourcesScreen onClose={handleCloseResources} />
       )}
     </>
   );

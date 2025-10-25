@@ -120,10 +120,13 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
                 <AlertTriangle className="w-10 h-10 text-red-600" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">Delete All Data?</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Delete Local Data?</h2>
             <p className="text-gray-600">
-              This will permanently delete all your mood entries, assessment results, and profile information.
-              This action cannot be undone.
+              This will permanently delete all mood entries, assessments, and profile data from your device.
+              Your PIN will also be removed and you'll need to set up Moodify again.
+            </p>
+            <p className="text-sm text-gray-500 italic">
+              Note: Anonymous research data already stored in our database cannot be deleted, as it contains no personal identifiers.
             </p>
           </div>
 
@@ -132,7 +135,7 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
               onClick={handleDeleteData}
               className="w-full py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all"
             >
-              Yes, Delete Everything
+              Yes, Delete Local Data
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
@@ -240,8 +243,8 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
             <div className="flex items-center space-x-3">
               <Trash2 className="w-6 h-6" />
               <div className="text-left">
-                <p className="font-semibold">Delete All Data</p>
-                <p className="text-sm">Permanently remove all your information</p>
+                <p className="font-semibold">Delete Local Data</p>
+                <p className="text-sm">Remove all data from this device</p>
               </div>
             </div>
             <ChevronRight className="w-6 h-6" />
@@ -251,8 +254,8 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
         {/* Info */}
         <div className="bg-white rounded-3xl shadow-2xl p-6">
           <p className="text-sm text-gray-600 text-center">
-            All your data is stored locally on your device. Moodify never sends your personal information
-            to any server. You can delete all your data at any time.
+            Your data is stored locally on your device and anonymously in our secure database for mental health research.
+            No personal identifiers (name, email, etc.) are collected. You can delete your local device data at any time.
           </p>
         </div>
       </div>

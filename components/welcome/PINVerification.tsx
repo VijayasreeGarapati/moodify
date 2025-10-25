@@ -93,14 +93,17 @@ export default function PINVerification({ storedPIN, onSuccess, onForgotPIN }: P
                 onClick={onForgotPIN}
                 className="text-red-600 font-semibold hover:text-red-700 underline text-sm"
               >
-                Reset All Data & Start Over
+                Reset Local Data & Start Over
               </button>
+              <p className="text-xs text-gray-500 italic">
+                Note: This only resets data on your device. Anonymous research data remains in database.
+              </p>
             </div>
           )}
         </form>
 
         <p className="text-xs text-gray-500 text-center">
-          Your data is stored securely on this device only
+          Your PIN protects local device data. Anonymous entries are securely stored for research.
         </p>
       </div>
     </div>

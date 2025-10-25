@@ -24,7 +24,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     }
 
     if (!sex) {
-      setError('Please select your sex');
+      setError('Please select your gender');
       return;
     }
 
@@ -78,10 +78,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             />
           </div>
 
-          {/* Sex */}
+          {/* Gender */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sex <span className="text-red-500">*</span>
+              Gender <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -189,7 +189,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           </div>
 
           <p className="text-xs text-gray-500 text-center">
-            This information is stored locally on your device and never shared
+            This demographic information is stored anonymously for mental health research. No personal identifiers are collected.
           </p>
         </div>
       </div>
