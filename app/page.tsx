@@ -1,65 +1,235 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useLocalStorage, useDataRetention, useClearAllData } from '@/lib/hooks/useLocalStorage';
+import { UserProfile, AppState, MoodEntry, QuestionnaireResponse, Assessment, PINData, DailyCheckIn } from '@/lib/types';
+import { calculateAssessmentScore } from '@/lib/utils';
+import WelcomeScreen from '@/components/welcome/WelcomeScreen';
+import PINVerification from '@/components/welcome/PINVerification';
+import OnboardingScreen from '@/components/onboarding/OnboardingScreen';
+import FunFactScreen from '@/components/shared/FunFactScreen';
+import QuestionnaireScreen from '@/components/questionnaire/QuestionnaireScreen';
+import ResultsScreen from '@/components/results/ResultsScreen';
+import DashboardScreen from '@/components/dashboard/DashboardScreen';
+import SettingsScreen from '@/components/feedback/SettingsScreen';
+
+type AppScreen =
+  | 'pin-verification'
+  | 'welcome'
+  | 'onboarding'
+  | 'fun-fact'
+  | 'questionnaire'
+  | 'results'
+  | 'dashboard'
+  | 'settings';
 
 export default function Home() {
+  const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('moodify-user-profile', null);
+  const [pinData, setPinData] = useLocalStorage<PINData | null>('moodify-pin', null);
+  const [appState, setAppState] = useLocalStorage<AppState>('moodify-app-state', {
+    hasCompletedOnboarding: false,
+    hasSeenWelcome: false,
+    assessmentHistory: [],
+    moodHistory: [],
+    dailyCheckIns: [],
+  });
+
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('welcome');
+  const [currentQuestionnaireResponses, setCurrentQuestionnaireResponses] = useState<QuestionnaireResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPINVerified, setIsPINVerified] = useState(false);
+
+  const clearAllData = useClearAllData();
+  useDataRetention();
+
+  // Determine initial screen based on stored data (ONLY on mount)
+  useEffect(() => {
+    if (!userProfile || !appState.hasCompletedOnboarding) {
+      // New user - show welcome
+      setCurrentScreen('welcome');
+    } else if (pinData && !isPINVerified) {
+      // Returning user with PIN - verify first
+      setCurrentScreen('pin-verification');
+    } else {
+      // Returning user without PIN OR PIN already verified
+      setCurrentScreen('dashboard');
+    }
+    setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
+
+  const handleWelcomeComplete = (hasConsented: boolean, hasPIN: boolean, pin?: string) => {
+    if (pin) {
+      setPinData({
+        pin,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    setAppState(prev => ({
+      ...prev,
+      hasSeenWelcome: true,
+    }));
+
+    setCurrentScreen('onboarding');
+  };
+
+  const handleOnboardingComplete = (profile: Omit<UserProfile, 'hasConsented' | 'consentDate' | 'hasPIN'>) => {
+    const fullProfile: UserProfile = {
+      ...profile,
+      hasConsented: true,
+      consentDate: new Date().toISOString(),
+      hasPIN: !!pinData,
+    };
+
+    setUserProfile(fullProfile);
+    setCurrentScreen('fun-fact');
+  };
+
+  const handleFunFactContinue = () => {
+    setCurrentScreen('questionnaire');
+  };
+
+  const handleQuestionnaireComplete = (responses: QuestionnaireResponse[]) => {
+    setCurrentQuestionnaireResponses(responses);
+
+    const { score, category } = calculateAssessmentScore(responses);
+
+    const assessment: Assessment = {
+      id: Date.now().toString(),
+      responses,
+      completedAt: new Date().toISOString(),
+      score,
+      category,
+    };
+
+    setAppState(prev => ({
+      ...prev,
+      hasCompletedOnboarding: true,
+      lastAssessmentDate: new Date().toISOString(),
+      assessmentHistory: [...prev.assessmentHistory, assessment],
+    }));
+
+    setCurrentScreen('results');
+  };
+
+  const handleResultsContinue = () => {
+    setCurrentScreen('dashboard');
+  };
+
+  const handleAddMood = (mood: MoodEntry) => {
+    setAppState(prev => ({
+      ...prev,
+      moodHistory: [...prev.moodHistory, mood],
+    }));
+  };
+
+  const handleDeleteMood = (id: string) => {
+    setAppState(prev => ({
+      ...prev,
+      moodHistory: prev.moodHistory.filter(entry => entry.id !== id),
+    }));
+  };
+
+  const handleDailyCheckIn = (checkIn: DailyCheckIn) => {
+    setAppState(prev => ({
+      ...prev,
+      dailyCheckIns: [...(prev.dailyCheckIns || []), checkIn],
+      lastCheckInDate: new Date().toISOString(),
+    }));
+  };
+
+  const handleTakeAssessment = () => {
+    setCurrentScreen('fun-fact');
+  };
+
+  const handleOpenSettings = () => {
+    setCurrentScreen('settings');
+  };
+
+  const handleCloseSettings = () => {
+    setCurrentScreen('dashboard');
+  };
+
+  const handleDeleteAllData = () => {
+    clearAllData();
+    setUserProfile(null);
+    setPinData(null);
+    setIsPINVerified(false);
+    setAppState({
+      hasCompletedOnboarding: false,
+      hasSeenWelcome: false,
+      assessmentHistory: [],
+      moodHistory: [],
+      dailyCheckIns: [],
+    });
+    setCurrentScreen('welcome');
+  };
+
+  const handlePINVerified = () => {
+    setIsPINVerified(true);
+    setCurrentScreen('dashboard');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
+        <div className="text-white text-2xl font-bold">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      {currentScreen === 'pin-verification' && pinData && (
+        <PINVerification
+          storedPIN={pinData.pin}
+          onSuccess={handlePINVerified}
+          onForgotPIN={handleDeleteAllData}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+
+      {currentScreen === 'welcome' && (
+        <WelcomeScreen onComplete={handleWelcomeComplete} />
+      )}
+
+      {currentScreen === 'onboarding' && (
+        <OnboardingScreen onComplete={handleOnboardingComplete} />
+      )}
+
+      {currentScreen === 'fun-fact' && (
+        <FunFactScreen onContinue={handleFunFactContinue} />
+      )}
+
+      {currentScreen === 'questionnaire' && (
+        <QuestionnaireScreen onComplete={handleQuestionnaireComplete} />
+      )}
+
+      {currentScreen === 'results' && (
+        <ResultsScreen
+          responses={currentQuestionnaireResponses}
+          onContinue={handleResultsContinue}
+        />
+      )}
+
+      {currentScreen === 'dashboard' && userProfile && (
+        <DashboardScreen
+          appState={appState}
+          onAddMood={handleAddMood}
+          onDeleteMood={handleDeleteMood}
+          onTakeAssessment={handleTakeAssessment}
+          onSettings={handleOpenSettings}
+          onDailyCheckIn={handleDailyCheckIn}
+        />
+      )}
+
+      {currentScreen === 'settings' && userProfile && (
+        <SettingsScreen
+          userProfile={userProfile}
+          onClose={handleCloseSettings}
+          onDeleteAllData={handleDeleteAllData}
+        />
+      )}
+    </>
   );
 }
