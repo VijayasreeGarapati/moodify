@@ -307,6 +307,33 @@ export default function DashboardScreen({
         {/* AI Analysis */}
         <AIAnalysis appState={appState} />
 
+        {/* Daily Check-ins */}
+        {appState.dailyCheckIns && appState.dailyCheckIns.length > 0 && (
+          <div className="bg-white rounded-3xl shadow-2xl p-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <MessageCircle className="w-6 h-6 text-purple-600" />
+              <h2 className="text-xl font-bold text-gray-800">Daily Reflections</h2>
+            </div>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {[...appState.dailyCheckIns]
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map((checkIn) => (
+                  <div
+                    key={checkIn.id}
+                    className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100"
+                  >
+                    <div className="flex items-start space-x-2 mb-2">
+                      <MessageCircle className="w-4 h-4 text-purple-600 mt-1 flex-shrink-0" />
+                      <p className="text-sm font-medium text-gray-800">{checkIn.question}</p>
+                    </div>
+                    <p className="text-sm text-gray-700 ml-6 italic">&ldquo;{checkIn.answer}&rdquo;</p>
+                    <p className="text-xs text-gray-500 ml-6 mt-1">{formatDate(checkIn.createdAt)}</p>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Recent Entries */}
         <div className="bg-white rounded-3xl shadow-2xl p-6">
           <div className="flex items-center justify-between mb-4">

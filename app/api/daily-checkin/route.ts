@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const { userContext } = await request.json();
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `You are a supportive mental health companion for teenagers. Generate a thoughtful, age-appropriate daily check-in question that helps them reflect on their emotions and wellbeing.
 
