@@ -1,12 +1,23 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { MoodEntry, AppState, DailyCheckIn as DailyCheckInType } from '@/lib/types';
+import { MoodEntry, AppState, DailyCheckIn as DailyCheckInType, Assessment } from '@/lib/types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Plus, TrendingUp, Calendar, Trash2, Settings, Menu, MessageCircle } from 'lucide-react';
+import { Plus, TrendingUp, Calendar, Trash2, Settings, Menu, MessageCircle, ClipboardList, Brain, RefreshCw } from 'lucide-react';
 import { getMoodEmoji, getMoodColor, formatDate } from '@/lib/utils';
-import AIAnalysis from './AIAnalysis';
 import DailyCheckIn from './DailyCheckIn';
+
+// Questions from the questionnaire
+const QUESTIONNAIRE_QUESTIONS = [
+  { id: 'q1', question: 'Over the past two weeks, how often have you felt happy or content?' },
+  { id: 'q2', question: 'How would you rate your stress level lately?' },
+  { id: 'q3', question: 'How well have you been sleeping?', options: ['Very well', 'Pretty well', 'Not great', 'Poorly', 'Very poorly'] },
+  { id: 'q4', question: 'Do you feel like you have someone to talk to when you need support?' },
+  { id: 'q5', question: 'How often do you feel overwhelmed by school, work, or daily responsibilities?', options: ['Rarely or never', 'Sometimes', 'Often', 'Most of the time', 'Always'] },
+  { id: 'q6', question: 'How satisfied are you with your social connections and friendships?' },
+  { id: 'q7', question: 'Have you been able to enjoy your hobbies or activities lately?' },
+  { id: 'q8', question: 'How confident do you feel about handling challenges in your life?' },
+];
 
 interface DashboardScreenProps {
   appState: AppState;
@@ -31,6 +42,48 @@ export default function DashboardScreen({
   const [selectedMood, setSelectedMood] = useState<MoodEntry['mood'] | null>(null);
   const [intensity, setIntensity] = useState(5);
   const [note, setNote] = useState('');
+  const [analysis, setAnalysis] = useState<string>('');
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+  const [hasAnalysis, setHasAnalysis] = useState(false);
+
+  // Scroll to section
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setShowMenu(false);
+    }
+  };
+
+  // Generate AI Analysis
+  const generateAnalysis = async () => {
+    try {
+      setIsLoadingAnalysis(true);
+      const response = await fetch('/api/analyze-mood', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          moodHistory: appState.moodHistory,
+          assessmentHistory: appState.assessmentHistory,
+          timeframe: 'past week',
+        }),
+      });
+
+      const data = await response.json();
+      setAnalysis(data.analysis);
+      setHasAnalysis(true);
+
+      // Scroll to analysis section
+      setTimeout(() => {
+        scrollToSection('ai-analysis');
+      }, 100);
+    } catch (err) {
+      setAnalysis('Unable to generate analysis right now. Please try again later.');
+      setHasAnalysis(true);
+    } finally {
+      setIsLoadingAnalysis(false);
+    }
+  };
 
   // Check if user should see daily check-in
   useEffect(() => {
@@ -130,119 +183,129 @@ export default function DashboardScreen({
     { mood: 'stressed', label: 'Stressed' },
   ];
 
-  if (showAddMood) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-4 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-800">How are you feeling?</h2>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {moods.map(({ mood, label }) => (
-              <button
-                key={mood}
-                onClick={() => setSelectedMood(mood)}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  selectedMood === mood
-                    ? 'border-purple-500 bg-purple-50 scale-105'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-4xl mb-2">{getMoodEmoji(mood)}</div>
-                <div className="text-sm font-medium text-gray-700">{label}</div>
-              </button>
-            ))}
-          </div>
-
-          {selectedMood && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Intensity (1-10)
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={intensity}
-                  onChange={(e) => setIntensity(parseInt(e.target.value))}
-                  className="w-full"
-                />
-                <div className="text-center text-2xl font-bold text-purple-600">{intensity}</div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Note (Optional)
-                </label>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none resize-none text-gray-900 font-medium placeholder:text-gray-400"
-                  rows={3}
-                  placeholder="What's on your mind?"
-                />
-              </div>
-            </>
-          )}
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                setShowAddMood(false);
-                setSelectedMood(null);
-                setIntensity(5);
-                setNote('');
-              }}
-              className="flex-1 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-all"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleAddMood}
-              disabled={!selectedMood}
-              className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-4">
       <div className="max-w-6xl mx-auto py-8 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Moodify</h1>
-            <p className="text-gray-600">Track your emotional journey</p>
+        <div className="bg-white rounded-3xl shadow-2xl p-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Moodify</h1>
+              <p className="text-gray-600">Track your emotional journey</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAddMood(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md"
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                <span className="text-sm">Add Mood</span>
+              </button>
+
+              <button
+                onClick={onTakeAssessment}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md"
+              >
+                <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
+                <span className="text-sm">Assessment</span>
+              </button>
+
+              <button
+                onClick={generateAnalysis}
+                disabled={appState.moodHistory.length < 3 || isLoadingAnalysis}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                title={appState.moodHistory.length < 3 ? 'Add at least 3 mood entries to get AI insights' : 'Generate AI analysis'}
+              >
+                {isLoadingAnalysis ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" strokeWidth={2.5} />
+                ) : (
+                  <Brain className="w-4 h-4" strokeWidth={2.5} />
+                )}
+                <span className="text-sm">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
+              </button>
+
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-2.5 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg hover:from-purple-200 hover:to-pink-200 transition-all duration-200 hover:shadow-md"
+              >
+                <Menu className="w-5 h-5 text-purple-700" strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-3 bg-purple-100 rounded-xl hover:bg-purple-200 transition-colors"
-          >
-            <Menu className="w-6 h-6 text-purple-600" />
-          </button>
         </div>
 
         {showMenu && (
           <div className="bg-white rounded-3xl shadow-2xl p-6 space-y-3">
-            <button
-              onClick={onTakeAssessment}
-              className="w-full p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-left"
-            >
-              <div className="flex items-center space-x-3">
-                <TrendingUp className="w-6 h-6 text-blue-600" />
-                <div>
-                  <div className="font-semibold text-gray-800">Take Assessment</div>
-                  <div className="text-sm text-gray-600">Check your mental wellbeing</div>
+            {/* View Section Buttons */}
+            {hasAnalysis && (
+              <button
+                onClick={() => scrollToSection('ai-analysis')}
+                className="w-full p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Brain className="w-6 h-6 text-orange-600" />
+                    <div>
+                      <div className="font-semibold text-gray-800">View AI Insights</div>
+                      <div className="text-sm text-gray-600">Personalized mood analysis</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+            )}
+
+            {appState.assessmentHistory.length > 0 && (
+              <button
+                onClick={() => scrollToSection('assessment-history')}
+                className="w-full p-4 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <ClipboardList className="w-6 h-6 text-indigo-600" />
+                    <div>
+                      <div className="font-semibold text-gray-800">View Assessment History</div>
+                      <div className="text-sm text-gray-600">{appState.assessmentHistory.length} assessment{appState.assessmentHistory.length > 1 ? 's' : ''}</div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            )}
+
+            {appState.dailyCheckIns && appState.dailyCheckIns.length > 0 && (
+              <button
+                onClick={() => scrollToSection('daily-reflections')}
+                className="w-full p-4 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <MessageCircle className="w-6 h-6 text-pink-600" />
+                    <div>
+                      <div className="font-semibold text-gray-800">View Daily Reflections</div>
+                      <div className="text-sm text-gray-600">{appState.dailyCheckIns.length} reflection{appState.dailyCheckIns.length > 1 ? 's' : ''}</div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            )}
+
+            {appState.moodHistory.length > 0 && (
+              <button
+                onClick={() => scrollToSection('mood-entries')}
+                className="w-full p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Calendar className="w-6 h-6 text-orange-600" />
+                    <div>
+                      <div className="font-semibold text-gray-800">View Mood Entries</div>
+                      <div className="text-sm text-gray-600">{appState.moodHistory.length} entr{appState.moodHistory.length > 1 ? 'ies' : 'y'}</div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            )}
+
             <button
               onClick={onSettings}
               className="w-full p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors text-left"
@@ -305,11 +368,99 @@ export default function DashboardScreen({
         )}
 
         {/* AI Analysis */}
-        <AIAnalysis appState={appState} />
+        {hasAnalysis && (
+          <div id="ai-analysis" className="bg-white rounded-3xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-rose-500 rounded-full flex items-center justify-center">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">AI Insights</h3>
+                  <p className="text-sm text-gray-600">Personalized for you</p>
+                </div>
+              </div>
+              <button
+                onClick={generateAnalysis}
+                disabled={isLoadingAnalysis}
+                className="p-2 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+                title="Refresh analysis"
+              >
+                <RefreshCw className={`w-5 h-5 text-orange-600 ${isLoadingAnalysis ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-rose-50 rounded-2xl p-6 border-2 border-orange-200">
+              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{analysis}</p>
+            </div>
+
+            <p className="text-xs text-gray-500 text-center">
+              AI analysis is based on your recent mood entries and assessment results
+            </p>
+          </div>
+        )}
+
+        {/* Assessment History */}
+        {appState.assessmentHistory && appState.assessmentHistory.length > 0 && (
+          <div id="assessment-history" className="bg-white rounded-3xl shadow-2xl p-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <ClipboardList className="w-6 h-6 text-purple-600" />
+              <h2 className="text-xl font-bold text-gray-800">Assessment History</h2>
+            </div>
+            <div className="space-y-4">
+              {[...appState.assessmentHistory]
+                .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+                .map((assessment) => (
+                  <div
+                    key={assessment.id}
+                    className="p-5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                          assessment.category === 'excellent' ? 'bg-green-100 text-green-700' :
+                          assessment.category === 'good' ? 'bg-blue-100 text-blue-700' :
+                          assessment.category === 'fair' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-orange-100 text-orange-700'
+                        }`}>
+                          {assessment.category.charAt(0).toUpperCase() + assessment.category.slice(1)}
+                        </div>
+                        <span className="text-sm text-gray-600">Score: {assessment.score}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">{formatDate(assessment.completedAt)}</span>
+                    </div>
+
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {assessment.responses.map((response) => {
+                        const question = QUESTIONNAIRE_QUESTIONS.find(q => q.id === response.questionId);
+                        let answerText = response.answer.toString();
+
+                        // Format answer based on question type
+                        if (question?.options && typeof response.answer === 'number') {
+                          answerText = question.options[response.answer - 1] || response.answer.toString();
+                        } else if (typeof response.answer === 'string' && (response.answer === 'yes' || response.answer === 'no')) {
+                          answerText = response.answer.charAt(0).toUpperCase() + response.answer.slice(1);
+                        } else if (typeof response.answer === 'number' && !question?.options) {
+                          answerText = `${response.answer}/10`;
+                        }
+
+                        return (
+                          <div key={response.questionId} className="bg-white p-3 rounded-lg">
+                            <p className="text-sm font-medium text-gray-800 mb-1">{question?.question}</p>
+                            <p className="text-sm text-purple-700 font-semibold">{answerText}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* Daily Check-ins */}
         {appState.dailyCheckIns && appState.dailyCheckIns.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-2xl p-6">
+          <div id="daily-reflections" className="bg-white rounded-3xl shadow-2xl p-6">
             <div className="flex items-center space-x-2 mb-4">
               <MessageCircle className="w-6 h-6 text-purple-600" />
               <h2 className="text-xl font-bold text-gray-800">Daily Reflections</h2>
@@ -335,16 +486,9 @@ export default function DashboardScreen({
         )}
 
         {/* Recent Entries */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6">
+        <div id="mood-entries" className="bg-white rounded-3xl shadow-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Recent Entries</h2>
-            <button
-              onClick={() => setShowAddMood(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add Mood</span>
-            </button>
+            <h2 className="text-xl font-bold text-gray-800">Recent Mood Entries</h2>
           </div>
 
           {appState.moodHistory.length === 0 ? (
@@ -400,6 +544,87 @@ export default function DashboardScreen({
           onClose={() => setShowDailyCheckIn(false)}
           onSubmit={handleDailyCheckInSubmit}
         />
+      )}
+
+      {/* Add Mood Modal */}
+      {showAddMood && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-800">How are you feeling?</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {moods.map(({ mood, label }) => (
+                <button
+                  key={mood}
+                  onClick={() => setSelectedMood(mood)}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    selectedMood === mood
+                      ? 'border-purple-500 bg-purple-50 scale-105'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">{getMoodEmoji(mood)}</div>
+                  <div className="text-sm font-medium text-gray-700">{label}</div>
+                </button>
+              ))}
+            </div>
+
+            {selectedMood && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Intensity (1-10)
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={intensity}
+                    onChange={(e) => setIntensity(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="text-center text-2xl font-bold text-purple-600">{intensity}</div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Note (Optional)
+                  </label>
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none resize-none text-gray-900 font-medium placeholder:text-gray-400"
+                    rows={3}
+                    placeholder="What's on your mind?"
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowAddMood(false);
+                  setSelectedMood(null);
+                  setIntensity(5);
+                  setNote('');
+                }}
+                className="flex-1 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddMood}
+                disabled={!selectedMood}
+                className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
