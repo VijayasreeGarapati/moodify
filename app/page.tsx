@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocalStorage, useDataRetention, useClearAllData } from '@/lib/hooks/useLocalStorage';
 import { UserProfile, AppState, MoodEntry, QuestionnaireResponse, Assessment, PINData, DailyCheckIn } from '@/lib/types';
 import { calculateAssessmentScore } from '@/lib/utils';
+import { supabaseAPI } from '@/lib/supabase/api';
 import WelcomeScreen from '@/components/welcome/WelcomeScreen';
 import PINVerification from '@/components/welcome/PINVerification';
 import OnboardingScreen from '@/components/onboarding/OnboardingScreen';
@@ -74,7 +75,7 @@ export default function Home() {
     setCurrentScreen('onboarding');
   };
 
-  const handleOnboardingComplete = (profile: Omit<UserProfile, 'hasConsented' | 'consentDate' | 'hasPIN'>) => {
+  const handleOnboardingComplete = async (profile: Omit<UserProfile, 'hasConsented' | 'consentDate' | 'hasPIN'>) => {
     const fullProfile: UserProfile = {
       ...profile,
       hasConsented: true,
@@ -82,7 +83,18 @@ export default function Home() {
       hasPIN: !!pinData,
     };
 
+    // Save to localStorage
     setUserProfile(fullProfile);
+
+    // Optionally save user profile to database for record keeping
+    try {
+      await supabaseAPI.createUser(fullProfile);
+      console.log('User profile saved to database');
+    } catch (error) {
+      console.error('Failed to save user profile to database:', error);
+      // Continue with localStorage only - app still works offline
+    }
+
     setCurrentScreen('fun-fact');
   };
 
@@ -90,7 +102,7 @@ export default function Home() {
     setCurrentScreen('questionnaire');
   };
 
-  const handleQuestionnaireComplete = (responses: QuestionnaireResponse[]) => {
+  const handleQuestionnaireComplete = async (responses: QuestionnaireResponse[]) => {
     setCurrentQuestionnaireResponses(responses);
 
     const { score, category } = calculateAssessmentScore(responses);
@@ -103,12 +115,23 @@ export default function Home() {
       category,
     };
 
+    // Save to localStorage
     setAppState(prev => ({
       ...prev,
       hasCompletedOnboarding: true,
       lastAssessmentDate: new Date().toISOString(),
       assessmentHistory: [...prev.assessmentHistory, assessment],
     }));
+
+    // Save to Supabase database with demographics
+    if (userProfile) {
+      try {
+        await supabaseAPI.saveAssessment(userProfile, assessment);
+        console.log('Assessment saved to database');
+      } catch (error) {
+        console.error('Failed to save assessment to database:', error);
+      }
+    }
 
     setCurrentScreen('results');
   };
@@ -117,26 +140,50 @@ export default function Home() {
     setCurrentScreen('dashboard');
   };
 
-  const handleAddMood = (mood: MoodEntry) => {
+  const handleAddMood = async (mood: MoodEntry) => {
+    // Save to localStorage
     setAppState(prev => ({
       ...prev,
       moodHistory: [...prev.moodHistory, mood],
     }));
+
+    // Save to Supabase database with demographics
+    if (userProfile) {
+      try {
+        await supabaseAPI.saveMood(userProfile, mood);
+        console.log('Mood saved to database');
+      } catch (error) {
+        console.error('Failed to save mood to database:', error);
+      }
+    }
   };
 
-  const handleDeleteMood = (id: string) => {
+  const handleDeleteMood = async (id: string) => {
+    // Delete from localStorage only
+    // Database keeps all data for analytics purposes
     setAppState(prev => ({
       ...prev,
       moodHistory: prev.moodHistory.filter(entry => entry.id !== id),
     }));
   };
 
-  const handleDailyCheckIn = (checkIn: DailyCheckIn) => {
+  const handleDailyCheckIn = async (checkIn: DailyCheckIn) => {
+    // Save to localStorage
     setAppState(prev => ({
       ...prev,
       dailyCheckIns: [...(prev.dailyCheckIns || []), checkIn],
       lastCheckInDate: new Date().toISOString(),
     }));
+
+    // Save to Supabase database with demographics
+    if (userProfile) {
+      try {
+        await supabaseAPI.saveCheckIn(userProfile, checkIn);
+        console.log('Daily check-in saved to database');
+      } catch (error) {
+        console.error('Failed to save check-in to database:', error);
+      }
+    }
   };
 
   const handleTakeAssessment = () => {
