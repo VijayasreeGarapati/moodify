@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     // Send email using Resend
     const timestamp = new Date().toISOString();
-    const data = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "Moodify Feedback <onboarding@resend.dev>", // Resend's verified test email
       to: ["moodifykonnect@gmail.com"], // Sending to moodify account
       subject: `Moodify Feedback: ${
@@ -39,8 +39,12 @@ Sent from Moodify App
       `,
     });
 
+    if (error) {
+      throw error;
+    }
+
     return NextResponse.json(
-      { message: 'Feedback sent successfully!', id: data.id },
+      { message: 'Feedback sent successfully!', id: data?.id },
       { status: 200 }
     );
   } catch (error) {
