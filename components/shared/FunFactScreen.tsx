@@ -16,7 +16,7 @@ export default function FunFactScreen({ onContinue }: FunFactScreenProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-500 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-500 flex items-center justify-center p-4 pb-40">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-8 animate-fadeIn">
         <div className="text-center space-y-4">
           <div className="flex justify-center">

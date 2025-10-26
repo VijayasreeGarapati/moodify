@@ -257,10 +257,8 @@ export default function Home() {
     );
   }
 
-  // Show floating button on screens after onboarding
-  const showFloatingButton = currentScreen !== 'welcome' &&
-                             currentScreen !== 'onboarding' &&
-                             currentScreen !== 'pin-verification';
+  // Show floating button on all screens
+  const showFloatingButton = true;
 
   return (
     <>

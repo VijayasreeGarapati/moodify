@@ -191,9 +191,16 @@ export default function DashboardScreen({
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
           <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Moodify</h1>
-              <p className="text-sm sm:text-base text-gray-600">Track your emotional journey</p>
+            <div className="flex items-center gap-3">
+              <img
+                src="/moodify-logo.svg"
+                alt="Moodify Logo"
+                className="w-12 h-12 sm:w-14 sm:h-14"
+              />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Moodify</h1>
+                <p className="text-sm sm:text-base text-gray-600">Track your emotional journey</p>
+              </div>
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
@@ -210,8 +217,7 @@ export default function DashboardScreen({
                 className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-md touch-manipulation"
               >
                 <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
-                <span className="text-xs sm:text-sm hidden sm:inline">Assessment</span>
-                <span className="text-xs sm:text-sm sm:hidden">Test</span>
+                <span className="text-xs sm:text-sm">Assessment</span>
               </button>
 
               <div className="relative group">
@@ -225,8 +231,7 @@ export default function DashboardScreen({
                   ) : (
                     <Brain className="w-4 h-4" strokeWidth={2.5} />
                   )}
-                  <span className="text-xs sm:text-sm hidden sm:inline">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
-                  <span className="text-xs sm:text-sm sm:hidden">AI</span>
+                  <span className="text-xs sm:text-sm">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
                   {appState.moodHistory.length < 3 && (
                     <Info className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={2.5} />
                   )}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { UserProfile } from '@/lib/types';
-import { Trash2, Lock, User, MessageSquare, ChevronRight, AlertTriangle, X } from 'lucide-react';
+import { Trash2, Lock, User, MessageSquare, ChevronRight, AlertTriangle, X, CheckCircle, Heart } from 'lucide-react';
 
 interface SettingsScreenProps {
   userProfile: UserProfile;
@@ -13,6 +13,7 @@ interface SettingsScreenProps {
 export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }: SettingsScreenProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [feedbackType, setFeedbackType] = useState<'bug' | 'feature' | 'general'>('general');
 
@@ -21,14 +22,67 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
     setShowDeleteConfirm(false);
   };
 
-  const handleSubmitFeedback = () => {
-    // In a real app, this would send feedback to a server
-    console.log('Feedback submitted:', { type: feedbackType, message: feedback });
-    alert('Thank you for your feedback! (Note: This is stored locally only)');
-    setShowFeedback(false);
-    setFeedback('');
-    setFeedbackType('general');
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+  const handleSubmitFeedback = async () => {
+    setIsSubmittingFeedback(true);
+
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: feedbackType,
+          message: feedback,
+        }),
+      });
+
+      if (response.ok) {
+        setShowFeedback(false);
+        setShowThankYou(true);
+        setFeedback('');
+        setFeedbackType('general');
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to send feedback. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to send feedback. Please check your internet connection and try again.');
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
   };
+
+  if (showThankYou) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-purple-500 p-4 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
+                <CheckCircle className="w-14 h-14 text-green-600" />
+              </div>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800">Thank You!</h2>
+            <p className="text-lg text-gray-600">
+              We've received your feedback and truly appreciate you taking the time to help us improve Moodify.
+            </p>
+            <div className="flex justify-center">
+              <Heart className="w-8 h-8 text-pink-500" />
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowThankYou(false)}
+            className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all"
+          >
+            Back to Settings
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (showFeedback) {
     return (
@@ -100,10 +154,10 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
 
           <button
             onClick={handleSubmitFeedback}
-            disabled={!feedback.trim()}
+            disabled={!feedback.trim() || isSubmittingFeedback}
             className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Submit Feedback
+            {isSubmittingFeedback ? 'Sending...' : 'Submit Feedback'}
           </button>
         </div>
       </div>
@@ -154,7 +208,14 @@ export default function SettingsScreen({ userProfile, onClose, onDeleteAllData }
       <div className="max-w-2xl mx-auto py-8 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-3xl shadow-2xl p-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src="/moodify-logo.svg"
+              alt="Moodify Logo"
+              className="w-10 h-10"
+            />
+            <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
+          </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

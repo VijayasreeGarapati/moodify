@@ -139,15 +139,17 @@ export default function ResultsScreen({ responses, onContinue }: ResultsScreenPr
   const showCrisisResources = analysis.category === 'needs-attention' || analysis.category === 'fair';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-4 overflow-y-auto">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-4 pb-40 overflow-y-auto">
       <div className="max-w-4xl mx-auto py-8 space-y-6">
         {/* Results Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className={`w-24 h-24 bg-gradient-to-br ${analysis.color} rounded-full flex items-center justify-center`}>
-                <Heart className="w-12 h-12 text-white" fill="white" />
-              </div>
+              <img
+                src="/moodify-logo.svg"
+                alt="Moodify Logo"
+                className="w-24 h-24"
+              />
             </div>
             <h1 className="text-3xl font-bold text-gray-800">Your Results</h1>
             <p className="text-xl text-gray-600">{analysis.message}</p>

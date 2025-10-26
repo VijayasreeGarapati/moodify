@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Moodify - Your Mental Health Companion",
   description: "A safe, privacy-focused mental health companion app for teenagers to track emotions and wellbeing. All data stored locally.",
   icons: {
-    icon: '/favicon.svg',
+    icon: '/moodify-logo.svg',
   },
 };
 

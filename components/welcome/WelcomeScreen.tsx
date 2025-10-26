@@ -52,13 +52,15 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
   if (step === 'welcome') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4 pb-40">
         <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <Heart className="w-10 h-10 text-white" fill="white" />
-              </div>
+              <img
+                src="/moodify-logo.svg"
+                alt="Moodify Logo"
+                className="w-24 h-24"
+              />
             </div>
             <h1 className="text-4xl font-bold text-gray-800">Moodify</h1>
             <p className="text-lg text-gray-600">
@@ -120,7 +122,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
   if (step === 'consent') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4 pb-40">
         <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
           <div className="text-center space-y-2">
             <div className="flex justify-center">
@@ -195,7 +197,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
   // PIN Setup step
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center p-4 pb-40">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center">

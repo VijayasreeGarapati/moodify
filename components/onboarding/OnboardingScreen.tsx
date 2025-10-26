@@ -49,7 +49,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4 pb-40">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
