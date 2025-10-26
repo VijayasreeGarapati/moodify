@@ -107,17 +107,17 @@ export default function ResourcesModal({ isOpen, onClose }: ResourcesModalProps)
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-gradient-to-r from-purple-50 to-pink-50">
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-purple-600" />
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-800">Support Resources</h1>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-gradient-to-r from-purple-50 to-pink-50 gap-2">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+            <Heart className="w-5 h-5 sm:w-7 sm:h-7 text-purple-600 flex-shrink-0" />
+            <h1 className="text-base sm:text-2xl font-bold text-gray-800 truncate">Support Resources</h1>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white rounded-lg transition-colors touch-manipulation cursor-pointer"
+            className="p-2 hover:bg-white rounded-lg transition-colors touch-manipulation cursor-pointer flex-shrink-0"
             aria-label="Close"
           >
-            <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+            <X className="w-6 h-6 text-gray-600" />
           </button>
         </div>
 

@@ -28,19 +28,19 @@ export default function CrisisButton({ isOpen, onClose }: CrisisButtonProps) {
       >
         {/* Header */}
         <div className="bg-red-600 text-white p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <div className="bg-white p-2 rounded-full">
-                <Phone className="w-5 h-5 text-red-600" />
+          <div className="flex items-center justify-between mb-2 gap-2">
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className="bg-white p-2 rounded-full flex-shrink-0">
+                <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold">Crisis Support</h2>
+              <h2 className="text-lg sm:text-2xl font-bold truncate">Crisis Support</h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-red-700 rounded-lg transition-colors touch-manipulation cursor-pointer"
+              className="p-2 hover:bg-red-700 rounded-lg transition-colors touch-manipulation cursor-pointer flex-shrink-0"
               aria-label="Close"
             >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              <X className="w-6 h-6" />
             </button>
           </div>
           <p className="text-red-100 text-sm">
