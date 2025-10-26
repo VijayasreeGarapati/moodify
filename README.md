@@ -15,6 +15,7 @@ Moodify empowers teenagers with tools to understand and manage their mental heal
 - **Mental Health Assessment** - 8-question questionnaire to evaluate emotional wellbeing
 - **Visual Analytics** - Interactive charts and statistics showing mood trends over time
 - **Crisis Resources** - Always-accessible crisis support hotlines and mental health resources
+- **User Feedback** - Send bug reports, feature requests, or general feedback directly from the app
 
 ### Privacy & Security
 - **Local-First Storage** - All personal data is stored on your device using browser localStorage
@@ -36,6 +37,7 @@ Moodify empowers teenagers with tools to understand and manage their mental heal
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **AI:** Google Gemini AI (gemini-2.0-flash)
+- **Email:** Resend (for user feedback)
 - **Database:** Supabase (optional, for analytics)
 - **Charts:** Recharts
 - **Icons:** Lucide React
@@ -67,6 +69,9 @@ npm install
    # Required for AI features
    GEMINI_API_KEY=your_gemini_api_key_here
 
+   # Required for feedback email functionality
+   RESEND_API_KEY=your_resend_api_key_here
+
    # Optional: For cloud analytics/backup
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -74,9 +79,12 @@ npm install
 
    **Get your API keys:**
    - Gemini AI: [Google AI Studio](https://aistudio.google.com/app/apikey) (free tier available)
+   - Resend: [Resend Dashboard](https://resend.com/api-keys) (free tier: 100 emails/day, 3,000/month)
    - Supabase (optional): [Supabase Dashboard](https://supabase.com/dashboard) (free tier available)
 
-   **Note:** The app works fully without Supabase. It's only used for optional analytics and research data.
+   **Note:**
+   - The app works fully without Supabase. It's only used for optional analytics and research data.
+   - For Resend: Create an account with the email address where you want to receive feedback (e.g., `moodifykonnect@gmail.com`). When using the free test domain `onboarding@resend.dev`, feedback emails can only be sent to the account owner's email address.
 
 4. **Run the development server:**
 ```bash
@@ -103,7 +111,8 @@ moodify/
 ├── app/
 │   ├── api/
 │   │   ├── analyze-mood/     # AI mood analysis endpoint
-│   │   └── daily-checkin/    # AI daily question generation
+│   │   ├── daily-checkin/    # AI daily question generation
+│   │   └── feedback/         # User feedback email endpoint
 │   ├── page.tsx              # Main app with state management
 │   └── globals.css           # Global styles
 │
