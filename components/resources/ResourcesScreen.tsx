@@ -8,6 +8,7 @@ interface ResourcesScreenProps {
 }
 
 const resources: Resource[] = [
+  // Crisis Resources - Most Important
   {
     id: 'crisis-1',
     title: '988 Suicide & Crisis Lifeline',
@@ -25,6 +26,23 @@ const resources: Resource[] = [
     category: 'crisis',
   },
   {
+    id: 'crisis-3',
+    title: 'The Trevor Project',
+    description: 'LGBTQ+ youth crisis support - Call, text, or chat 24/7',
+    type: 'hotline',
+    phone: '1-866-488-7386',
+    category: 'crisis',
+  },
+  {
+    id: 'crisis-4',
+    title: 'RAINN (Rape, Abuse & Incest National Network)',
+    description: 'Support for survivors of sexual assault - 24/7',
+    type: 'hotline',
+    phone: '1-800-656-4673',
+    category: 'crisis',
+  },
+  // General Support
+  {
     id: 'general-1',
     title: 'Teen Line',
     description: 'Teens helping teens. Call or text for peer support',
@@ -40,6 +58,15 @@ const resources: Resource[] = [
     phone: '1-800-662-4357',
     category: 'general',
   },
+  {
+    id: 'general-3',
+    title: 'National Eating Disorders Association',
+    description: 'Support for eating disorders and body image concerns',
+    type: 'hotline',
+    phone: '1-800-931-2237',
+    category: 'general',
+  },
+  // Online Resources
   {
     id: 'website-1',
     title: 'Psychology Today - Find a Therapist',
@@ -58,10 +85,10 @@ const resources: Resource[] = [
   },
   {
     id: 'website-3',
-    title: 'NAMI (National Alliance on Mental Illness)',
-    description: 'Support, education and advocacy for mental health',
+    title: 'Cleveland Clinic - Understanding Stress',
+    description: 'Comprehensive guide to understanding and managing stress',
     type: 'website',
-    url: 'https://www.nami.org/Your-Journey/Teens-Young-Adults',
+    url: 'https://my.clevelandclinic.org/health/diseases/11874-stress',
     category: 'self-help',
   },
 ];

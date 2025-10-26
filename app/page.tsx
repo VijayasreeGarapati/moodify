@@ -14,6 +14,9 @@ import ResultsScreen from '@/components/results/ResultsScreen';
 import DashboardScreen from '@/components/dashboard/DashboardScreen';
 import SettingsScreen from '@/components/feedback/SettingsScreen';
 import ResourcesScreen from '@/components/resources/ResourcesScreen';
+import ResourcesModal from '@/components/resources/ResourcesModal';
+import FloatingResourcesButton from '@/components/resources/FloatingResourcesButton';
+import CrisisButton from '@/components/resources/CrisisButton';
 
 type AppScreen =
   | 'pin-verification'
@@ -41,6 +44,8 @@ export default function Home() {
   const [currentQuestionnaireResponses, setCurrentQuestionnaireResponses] = useState<QuestionnaireResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPINVerified, setIsPINVerified] = useState(false);
+  const [isResourcesModalOpen, setIsResourcesModalOpen] = useState(false);
+  const [isCrisisModalOpen, setIsCrisisModalOpen] = useState(false);
 
   const clearAllData = useClearAllData();
   useDataRetention();
@@ -228,6 +233,22 @@ export default function Home() {
     setCurrentScreen('dashboard');
   };
 
+  const handleOpenResourcesModal = () => {
+    setIsResourcesModalOpen(true);
+  };
+
+  const handleCloseResourcesModal = () => {
+    setIsResourcesModalOpen(false);
+  };
+
+  const handleOpenCrisisModal = () => {
+    setIsCrisisModalOpen(true);
+  };
+
+  const handleCloseCrisisModal = () => {
+    setIsCrisisModalOpen(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
@@ -235,6 +256,11 @@ export default function Home() {
       </div>
     );
   }
+
+  // Show floating button on screens after onboarding
+  const showFloatingButton = currentScreen !== 'welcome' &&
+                             currentScreen !== 'onboarding' &&
+                             currentScreen !== 'pin-verification';
 
   return (
     <>
@@ -292,6 +318,26 @@ export default function Home() {
       {currentScreen === 'resources' && (
         <ResourcesScreen onClose={handleCloseResources} />
       )}
+
+      {/* Fixed Bottom Action Bar with Resources and Crisis Buttons */}
+      {showFloatingButton && (
+        <FloatingResourcesButton
+          onResourcesClick={handleOpenResourcesModal}
+          onCrisisClick={handleOpenCrisisModal}
+        />
+      )}
+
+      {/* Resources Modal */}
+      <ResourcesModal
+        isOpen={isResourcesModalOpen}
+        onClose={handleCloseResourcesModal}
+      />
+
+      {/* Crisis Modal */}
+      <CrisisButton
+        isOpen={isCrisisModalOpen}
+        onClose={handleCloseCrisisModal}
+      />
     </>
   );
 }

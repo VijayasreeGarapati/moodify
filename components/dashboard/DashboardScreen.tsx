@@ -186,47 +186,49 @@ export default function DashboardScreen({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-4">
-      <div className="max-w-6xl mx-auto py-8 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-3 sm:p-4 pb-24 xl:pb-8">
+      <div className="max-w-6xl mx-auto py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
+          <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Moodify</h1>
-              <p className="text-gray-600">Track your emotional journey</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Moodify</h1>
+              <p className="text-sm sm:text-base text-gray-600">Track your emotional journey</p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <button
                 onClick={() => setShowAddMood(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-md touch-manipulation"
               >
                 <Plus className="w-4 h-4" strokeWidth={2.5} />
-                <span className="text-sm">Add Mood</span>
+                <span className="text-xs sm:text-sm">Add Mood</span>
               </button>
 
               <button
                 onClick={onTakeAssessment}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-md touch-manipulation"
               >
                 <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
-                <span className="text-sm">Assessment</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">Assessment</span>
+                <span className="text-xs sm:text-sm sm:hidden">Test</span>
               </button>
 
               <div className="relative group">
                 <button
                   onClick={generateAnalysis}
                   disabled={appState.moodHistory.length < 3 || isLoadingAnalysis}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 touch-manipulation"
                 >
                   {isLoadingAnalysis ? (
                     <RefreshCw className="w-4 h-4 animate-spin" strokeWidth={2.5} />
                   ) : (
                     <Brain className="w-4 h-4" strokeWidth={2.5} />
                   )}
-                  <span className="text-sm">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
+                  <span className="text-xs sm:text-sm hidden sm:inline">{isLoadingAnalysis ? 'Analyzing...' : 'AI Insights'}</span>
+                  <span className="text-xs sm:text-sm sm:hidden">AI</span>
                   {appState.moodHistory.length < 3 && (
-                    <Info className="w-4 h-4" strokeWidth={2.5} />
+                    <Info className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={2.5} />
                   )}
                 </button>
                 {appState.moodHistory.length < 3 && (
@@ -242,7 +244,7 @@ export default function DashboardScreen({
 
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2.5 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg hover:from-purple-200 hover:to-pink-200 transition-all duration-200 hover:shadow-md"
+                className="p-2 sm:p-2.5 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg hover:from-purple-200 hover:to-pink-200 active:scale-95 transition-all duration-200 hover:shadow-md touch-manipulation"
               >
                 <Menu className="w-5 h-5 text-purple-700" strokeWidth={2.5} />
               </button>
@@ -251,7 +253,7 @@ export default function DashboardScreen({
         </div>
 
         {showMenu && (
-          <div className="bg-white rounded-3xl shadow-2xl p-6 space-y-3">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 space-y-2 sm:space-y-3">
             {/* View Section Buttons */}
             {hasAnalysis && (
               <button
@@ -350,26 +352,26 @@ export default function DashboardScreen({
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Total Entries</p>
                 <p className="text-3xl font-bold text-gray-800">{stats.totalEntries}</p>
               </div>
-              <Calendar className="w-12 h-12 text-purple-600 opacity-20" />
+              <Calendar className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 opacity-20" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Last 7 Days</p>
                 <p className="text-3xl font-bold text-gray-800">{stats.last7DaysEntries}</p>
               </div>
-              <TrendingUp className="w-12 h-12 text-pink-600 opacity-20" />
+              <TrendingUp className="w-10 h-10 sm:w-12 sm:h-12 text-pink-600 opacity-20" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Most Common</p>
@@ -381,9 +383,9 @@ export default function DashboardScreen({
 
         {/* Chart */}
         {chartData.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-2xl p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Mood Trend</h2>
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Mood Trend</h2>
+            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
@@ -397,7 +399,7 @@ export default function DashboardScreen({
 
         {/* AI Analysis */}
         {hasAnalysis && (
-          <div id="ai-analysis" className="bg-white rounded-3xl shadow-2xl p-6 space-y-4">
+          <div id="ai-analysis" className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-rose-500 rounded-full flex items-center justify-center">
@@ -430,7 +432,7 @@ export default function DashboardScreen({
 
         {/* Assessment History */}
         {appState.assessmentHistory && appState.assessmentHistory.length > 0 && (
-          <div id="assessment-history" className="bg-white rounded-3xl shadow-2xl p-6">
+          <div id="assessment-history" className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
             <div className="flex items-center space-x-2 mb-4">
               <ClipboardList className="w-6 h-6 text-purple-600" />
               <h2 className="text-xl font-bold text-gray-800">Assessment History</h2>
@@ -488,7 +490,7 @@ export default function DashboardScreen({
 
         {/* Daily Check-ins */}
         {appState.dailyCheckIns && appState.dailyCheckIns.length > 0 && (
-          <div id="daily-reflections" className="bg-white rounded-3xl shadow-2xl p-6">
+          <div id="daily-reflections" className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
             <div className="flex items-center space-x-2 mb-4">
               <MessageCircle className="w-6 h-6 text-purple-600" />
               <h2 className="text-xl font-bold text-gray-800">Daily Reflections</h2>
@@ -514,7 +516,7 @@ export default function DashboardScreen({
         )}
 
         {/* Recent Entries */}
-        <div id="mood-entries" className="bg-white rounded-3xl shadow-2xl p-6">
+        <div id="mood-entries" className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-800">Recent Mood Entries</h2>
           </div>
@@ -576,8 +578,8 @@ export default function DashboardScreen({
 
       {/* Add Mood Modal */}
       {showAddMood && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-gradient-to-br from-purple-500/95 via-pink-500/95 to-orange-400/95 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 space-y-4 sm:space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-gray-800">How are you feeling?</h2>
             </div>

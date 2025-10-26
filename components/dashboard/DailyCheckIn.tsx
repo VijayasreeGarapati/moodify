@@ -46,7 +46,7 @@ export default function DailyCheckIn({ onClose, onSubmit }: DailyCheckInProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-gradient-to-br from-purple-500/95 via-pink-500/95 to-orange-400/95 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-8 space-y-6 animate-fadeIn">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
